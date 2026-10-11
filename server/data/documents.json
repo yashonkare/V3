@@ -1,0 +1,93 @@
+[
+  {
+    "id": "doc_1791715481191_9a24d954",
+    "filename": "36969_2009_12_1501_42798_Judgement_15-Mar-2023.pdf",
+    "fileSize": 148410,
+    "mimeType": "application/pdf",
+    "uploadedAt": "2026-10-11T10:44:41.195Z",
+    "status": "Completed",
+    "caseTitle": "First Named Party v. Second Named Party / State",
+    "summaryPreview": "This criminal matter came before the court concerning legal issues arising from the dispute between the parties. The court evaluated the procedural submissions, applicable statutes...",
+    "analysis": {
+      "documentMetadata": {
+        "filename": "36969_2009_12_1501_42798_Judgement_15-Mar-2023.pdf",
+        "totalPages": 24,
+        "extractedChars": 40455
+      },
+      "caseCategory": {
+        "category": "Criminal",
+        "reason": "Document concerns criminal proceedings and statutory penal provisions."
+      },
+      "courtMetadata": {
+        "courtName": "Supreme Court of India",
+        "caseNumber": "Criminal Appeal No. 954 of 2011",
+        "dateOfJudgment": "Not found in extracted text",
+        "judges": [
+          "Not found in extracted text"
+        ]
+      },
+      "parties": [
+        {
+          "name": "First Named Party",
+          "role": "Appellant / Accused",
+          "notes": "Identified from initial party listing"
+        },
+        {
+          "name": "Second Named Party / State",
+          "role": "Respondent",
+          "notes": "Opposing party in proceedings"
+        }
+      ],
+      "laws": [
+        {
+          "act": "Indian Penal Code, 1860",
+          "section": "Relevant Sections",
+          "context": "Discussed by the court",
+          "explanation": "Primary statutory basis examined in the judgment."
+        }
+      ],
+      "summary": {
+        "plainEnglish": "This criminal matter came before the court concerning legal issues arising from the dispute between the parties. The court evaluated the procedural submissions, applicable statutes, and record before rendering its observations.",
+        "coreIssues": [
+          "Whether the legal prerequisites under the applicable statute were satisfied.",
+          "Whether the impugned decision of the court below required appellate interference."
+        ]
+      },
+      "analysis": {
+        "partyArguments": [
+          {
+            "party": "Appellant",
+            "argument": "Contended that the lower court erred in evaluating facts and misapplied statutory provisions."
+          },
+          {
+            "party": "Respondent",
+            "argument": "Submitted that the impugned order was well-reasoned and supported by evidence."
+          }
+        ],
+        "courtReasoning": [
+          "The court observed that judicial scrutiny requires faithful application of statutory standards.",
+          "The material on record was evaluated to ascertain whether the findings were sustainable."
+        ],
+        "finalOutcome": {
+          "status": "Unclear",
+          "order": "Outcome unclear from the available text.",
+          "isInterim": false
+        }
+      },
+      "evidence": [
+        {
+          "supportsFinding": "Operative Conclusion / Finding",
+          "quote": "24 of the court of Session. The bail bonds executed by the appellants stand discharged”. Pending application(s), if any, shall stand disposed of.",
+          "pageNumber": 24
+        }
+      ],
+      "uncertainties": [
+        "Exact coram / judge names not explicitly indexed in extracted text.",
+        "Date of institution was not specified in the first section."
+      ]
+    },
+    "fileReference": "doc_1791715481191_9a24d954.pdf",
+    "errorMessage": null,
+    "updatedAt": "2026-10-11T10:44:46.678Z"
+  }
+]
