@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CASEDECODER — Authenticity & Verification Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink-900: #172421;
+      --ink-700: #344640;
+      --paper-50: #F8F7F2;
+      --surface-0: #FFFFFF;
+      --line-200: #E2E6E0;
+      --teal-700: #176B5B;
+      --teal-800: #115346;
+      --teal-100: #DDEFE8;
+      --teal-50: #F0F7F4;
+      --amber-700: #8A5A12;
+      --amber-100: #FFF0D2;
+      --red-700: #A3332B;
+      --red-100: #FBE8E5;
+      --slate-600: #586762;
+      --slate-100: #F0F3F1;
+      --radius-card: 14px;
+      --radius-control: 8px;
+      --radius-badge: 6px;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--paper-50);
+      color: var(--ink-900);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    .app-header {
+      background: var(--surface-0);
+      border-bottom: 1px solid var(--line-200);
+      padding: 16px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-mark {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--ink-900);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .brand-accent { color: var(--teal-700); }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .api-badge {
+      font-size: 12px;
+      padding: 4px 10px;
+      background: var(--teal-50);
+      border: 1px solid var(--teal-100);
+      color: var(--teal-800);
+      border-radius: 20px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 36px auto;
+      padding: 0 24px;
+    }
+
+    .hero-banner {
+      margin-bottom: 32px;
+    }
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--teal-700);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--ink-900);
+      margin-bottom: 10px;
+    }
+    .hero-sub {
+      color: var(--ink-700);
+      font-size: 16px;
+      max-width: 780px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface-0);
+      border: 1px solid var(--line-200);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--ink-900);
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--slate-600);
+      margin-bottom: 20px;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--line-200);
+      border-radius: var(--radius-control);
+      padding: 32px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--paper-50);
+      margin-bottom: 16px;
+    }
+    .dropzone:hover, .dropzone.active {
+      border-color: var(--teal-700);
+      background: var(--teal-50);
+    }
+
+    .dropzone-icon {
+      width: 40px;
+      height: 40px;
+      stroke: var(--teal-700);
+      margin-bottom: 10px;
+    }
+    .dropzone-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+    .dropzone-sub {
+      font-size: 12px;
+      color: var(--slate-600);
+      margin-top: 4px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: var(--radius-control);
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--teal-700);
+      color: #fff;
+      width: 100%;
+    }
+    .btn-primary:hover { background: var(--teal-800); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: var(--paper-50);
+      border: 1px solid var(--line-200);
+      color: var(--ink-900);
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn-secondary:hover { background: var(--slate-100); }
+
+    .file-chip {
+      background: var(--teal-50);
+      border: 1px solid var(--teal-100);
+      padding: 8px 12px;
+      border-radius: var(--radius-control);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+
+    .decision-banner {
+      padding: 16px 20px;
+      border-radius: var(--radius-control);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .dec-allowed { background: #e6f7ed; color: #0e703c; border: 1px solid #b7eb8f; }
+    .dec-review { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; }
+    .dec-rejected { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--line-200);
+      margin-bottom: 20px;
+      gap: 8px;
+    }
+    .tab-btn {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--slate-600);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .tab-btn.active {
+      color: var(--teal-700);
+      border-bottom-color: var(--teal-700);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .metric-box {
+      background: var(--paper-50);
+      border: 1px solid var(--line-200);
+      border-radius: var(--radius-control);
+      padding: 14px 16px;
+    }
+    .metric-label { font-size: 11px; text-transform: uppercase; color: var(--slate-600); font-weight: 700; }
+    .metric-val { font-size: 16px; font-weight: 700; margin: 4px 0; }
+    .metric-desc { font-size: 11px; color: var(--slate-600); }
+
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .tag {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: var(--radius-badge);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tag-judge { background: var(--teal-50); color: var(--teal-800); border: 1px solid var(--teal-100); }
+    .tag-advocate { background: #f0f5ff; color: #1d39c4; border: 1px solid #d6e4ff; }
+    .tag-citation { background: var(--amber-100); color: var(--amber-700); border: 1px solid #ffe58f; }
+
+    .cnr-card {
+      background: #fafafa;
+      border: 1px solid var(--line-200);
+      padding: 12px 16px;
+      border-radius: var(--radius-control);
+      margin-top: 8px;
+    }
+
+    .diag-item {
+      padding: 10px 14px;
+      background: var(--paper-50);
+      border-radius: var(--radius-control);
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .diag-k { font-weight: 600; color: var(--slate-600); }
+    .diag-v { font-family: monospace; color: var(--teal-800); word-break: break-all; margin-top: 2px; }
+
+    .loading-pulse {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--line-200);
+      border-top-color: var(--teal-700);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="brand-mark">
+      <span>CASE</span><span class="brand-accent">DECODER</span>
+    </div>
+    <div class="header-links">
+      <span class="api-badge" id="backendStatusBadge">● Connecting...</span>
+      <a href="/docs" target="_blank" style="font-size: 13px; color: var(--teal-700); text-decoration: none; font-weight: 600;">Swagger Docs ↗</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero-banner">
+      <div class="eyebrow">INDIAN LEGAL DOCUMENT AUTHENTICITY</div>
+      <h1>Authenticity & Reference Verification Prototype</h1>
+      <p class="hero-sub">
+        Verifies cryptographic integrity, digital signatures, CNR eCourts records, judicial citations, and semantic quotes of Indian court judgments.
+      </p>
+    </div>
+
+    <div class="main-grid">
+      <!-- Upload Card -->
+      <div class="card">
+        <h2 class="card-title">Select Document</h2>
+        <p class="card-desc">Upload an Indian judgment PDF or run the pre-loaded benchmark case.</p>
+
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" accept=".pdf" style="display:none">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18v-6"></path>
+            <path d="m9 15 3-3 3 3"></path>
+          </svg>
+          <div class="dropzone-label">Choose PDF or Drag & Drop</div>
+          <div class="dropzone-sub">Supports scanned & digital court judgments</div>
+        </div>
+
+        <div id="fileSelectedDisplay" style="display:none;" class="file-chip">
+          <span id="fileNameSpan" style="font-weight:600; text-overflow:ellipsis; overflow:hidden;"></span>
+          <button id="clearFileBtn" style="background:none; border:none; color:var(--red-700); cursor:pointer; font-weight:600;">✕</button>
+        </div>
+
+        <button id="verifyBtn" class="btn btn-primary">
+          Verify Document Authenticity
+        </button>
+
+        <button id="demoBtn" class="btn btn-secondary">
+          ⚡ Run Demo Test Judgment (DLHC 2022)
+        </button>
+      </div>
+
+      <!-- Results Card -->
+      <div class="card" id="resultsContainer">
+        <div id="emptyState" style="text-align: center; padding: 60px 20px; color: var(--slate-600);">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style="margin-bottom:12px; opacity:0.6;">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <p style="font-weight: 500;">No document analyzed yet.</p>
+          <p style="font-size: 13px;">Upload a PDF on the left or click "Run Demo Test Judgment" to inspect diagnostics.</p>
+        </div>
+
+        <div id="loadingIndicator" class="loading-pulse">
+          <div class="spinner"></div>
+          <div style="font-weight: 600;">Analyzing Document...</div>
+          <div style="font-size: 13px; color: var(--slate-600); margin-top: 4px;">Computing SHA-256, verifying digital signature, extracting citations & grounding CNR.</div>
+        </div>
+
+        <div id="reportContent" style="display:none;">
+          <div id="decisionBanner" class="decision-banner">
+            <div>
+              <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; opacity: 0.85;">DECISION ENGINE</div>
+              <div id="decisionText" style="font-size: 18px; font-weight: 700;"></div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 11px; text-transform: uppercase;">Tamper Penalty</div>
+              <div id="tamperScoreText" style="font-size: 20px; font-weight: 700;"></div>
+            </div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('summary')">Summary</button>
+            <button class="tab-btn" onclick="switchTab('entities')">Extracted Entities</button>
+            <button class="tab-btn" onclick="switchTab('crypto')">Diagnostics & Hashes</button>
+          </div>
+
+          <!-- Tab: Summary -->
+          <div id="tabSummary">
+            <div class="metric-grid">
+              <div class="metric-box">
+                <div class="metric-label">Digital Signature</div>
+                <div id="metricSig" class="metric-val"></div>
+                <div class="metric-desc">PDF dictionary signature flags</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">Semantic Integrity</div>
+                <div id="metricSemantic" class="metric-val"></div>
+                <div class="metric-desc">InLegal-SBERT embedding match</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">CNR Numbers</div>
+                <div id="metricCNR" class="metric-val"></div>
+                <div class="metric-desc">Standard 16-character eCourts keys</div>
+              </div>
+            </div>
+
+            <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">eCourts External Grounding:</h3>
+            <div id="cnrDetailsContainer"></div>
+          </div>
+
+          <!-- Tab: Entities -->
+          <div id="tabEntities" style="display:none;">
+            <div style="margin-bottom: 18px;">
+              <div class="metric-label">Judges Identified:</div>
+              <div id="judgesList" class="tag-cloud"></div>
+            </div>
+            <div style="margin-bottom: 18px;">
+              <div class="metric-label">Advocates / Counsels:</div>
+              <div id="advocatesList" class="tag-cloud"></div>
+            </div>
+            <div style="margin-bottom: 18px;">
+              <div class="metric-label">Reported Citations:</div>
+              <div id="citationsList" class="tag-cloud"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Crypto -->
+          <div id="tabCrypto" style="display:none;">
+            <div class="diag-item">
+              <div class="diag-k">SHA-256 Checksum:</div>
+              <div class="diag-v" id="diagHash"></div>
+            </div>
+            <div class="diag-item">
+              <div class="diag-k">Document Producer / Generator:</div>
+              <div class="diag-v" id="diagProducer"></div>
+            </div>
+            <div class="diag-item">
+              <div class="diag-k">Creation Date:</div>
+              <div class="diag-v" id="diagCreation"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentFile = null;
+
+    // Check health on load
+    fetch('/health')
+      .then(r => r.json())
+      .then(d => {
+        const b = document.getElementById('backendStatusBadge');
+        b.textContent = '● Verification Engine Online';
+        b.style.color = '#0e703c';
+        b.style.background = '#e6f7ed';
+      })
+      .catch(() => {
+        const b = document.getElementById('backendStatusBadge');
+        b.textContent = '● Engine Connecting...';
+      });
+
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileDisplay = document.getElementById('fileSelectedDisplay');
+    const fileNameSpan = document.getElementById('fileNameSpan');
+    const clearFileBtn = document.getElementById('clearFileBtn');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const demoBtn = document.getElementById('demoBtn');
+
+    dropzone.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+      if (e.target.files[0]) setSelectedFile(e.target.files[0]);
+    };
+
+    dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('active'); };
+    dropzone.ondragleave = () => dropzone.classList.remove('active');
+    dropzone.ondrop = (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('active');
+      if (e.dataTransfer.files[0]) setSelectedFile(e.dataTransfer.files[0]);
+    };
+
+    clearFileBtn.onclick = () => {
+      currentFile = null;
+      fileInput.value = '';
+      fileDisplay.style.display = 'none';
+      dropzone.style.display = 'block';
+    };
+
+    function setSelectedFile(f) {
+      currentFile = f;
+      fileNameSpan.textContent = f.name;
+      fileDisplay.style.display = 'flex';
+      dropzone.style.display = 'none';
+    }
+
+    verifyBtn.onclick = () => {
+      if (!currentFile) {
+        alert('Please select a PDF document first.');
+        return;
+      }
+      runVerification(currentFile);
+    };
+
+    demoBtn.onclick = async () => {
+      // Fetch the pre-generated test sample
+      const res = await fetch('/static/test_sample.pdf');
+      const blob = await res.blob();
+      const file = new File([blob], 'DLHC_2022_Acquittal_Sample.pdf', { type: 'application/pdf' });
+      setSelectedFile(file);
+      runVerification(file);
+    };
+
+    async function runVerification(file) {
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('reportContent').style.display = 'none';
+      document.getElementById('loadingIndicator').style.display = 'block';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/verify-document/', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        renderResults(data);
+      } catch (err) {
+        alert('Verification request failed: ' + err.message);
+      } finally {
+        document.getElementById('loadingIndicator').style.display = 'none';
+      }
+    }
+
+    function renderResults(res) {
+      document.getElementById('reportContent').style.display = 'block';
+      const dec = res.decision;
+      const decBox = document.getElementById('decisionBanner');
+      decBox.className = 'decision-banner ' + (dec === 'Allowed' ? 'dec-allowed' : (dec === 'Rejected' ? 'dec-rejected' : 'dec-review'));
+      document.getElementById('decisionText').textContent = dec;
+
+      const diag = res.diagnostics || {};
+      const meta = diag.metadata_check || {};
+      document.getElementById('tamperScoreText').textContent = (meta.tamper_score || 0) + ' / 100';
+
+      // Summary
+      const sigEl = document.getElementById('metricSig');
+      sigEl.textContent = meta.is_signed ? '✓ Valid Signature' : '⚠ Unsigned PDF';
+      sigEl.style.color = meta.is_signed ? '#0e703c' : '#d48806';
+
+      const semScore = diag.semantic_similarity_score ?? 1.0;
+      document.getElementById('metricSemantic').textContent = Math.round(semScore * 100) + '% Canonical Match';
+
+      const entities = diag.extracted_entities || {};
+      const cnrs = entities.cnr_numbers || [];
+      document.getElementById('metricCNR').textContent = cnrs.length + ' Registered';
+
+      // External Grounding
+      const ext = diag.external_api_grounding || {};
+      const cnrBox = document.getElementById('cnrDetailsContainer');
+      cnrBox.innerHTML = '';
+      if (Object.keys(ext).length === 0) {
+        cnrBox.innerHTML = '<div style="font-size:13px; color:var(--slate-600); font-style:italic;">No CNR keys found to ground against eCourts index.</div>';
+      } else {
+        for (const [cnr, val] of Object.entries(ext)) {
+          cnrBox.innerHTML += `
+            <div class="cnr-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:var(--teal-800);">${cnr}</strong>
+                <span style="font-size:11px; font-weight:700; color:#0e703c; background:#e6f7ed; padding:2px 8px; border-radius:4px;">${val.status}</span>
+              </div>
+              <div style="font-size:12px; color:var(--slate-600); margin-top:4px;">
+                ${val.data ? `Court: ${val.data.court} | Status: ${val.data.case_status}` : ''}
+              </div>
+            </div>`;
+        }
+      }
+
+      // Entities
+      const renderTags = (id, list, cls, prefix) => {
+        const el = document.getElementById(id);
+        el.innerHTML = '';
+        if (!list || list.length === 0) {
+          el.innerHTML = '<span style="font-size:13px; color:var(--slate-600);">None identified in text</span>';
+          return;
+        }
+        list.forEach(item => {
+          el.innerHTML += `<span class="tag ${cls}">${prefix} ${item}</span>`;
+        });
+      };
+      renderTags('judgesList', entities.judges, 'tag-judge', '⚖');
+      renderTags('advocatesList', entities.advocates, 'tag-advocate', '👤');
+      renderTags('citationsList', entities.citations, 'tag-citation', '📖');
+
+      // Diagnostics
+      document.getElementById('diagHash').textContent = meta.hash_sha256 || 'N/A';
+      document.getElementById('diagProducer').textContent = meta.generator || 'Not identified';
+      document.getElementById('diagCreation').textContent = meta.creation_date || 'Missing creation timestamp';
+    }
+
+    function switchTab(name) {
+      document.getElementById('tabSummary').style.display = name === 'summary' ? 'block' : 'none';
+      document.getElementById('tabEntities').style.display = name === 'entities' ? 'block' : 'none';
+      document.getElementById('tabCrypto').style.display = name === 'crypto' ? 'block' : 'none';
+
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach((b, i) => {
+        b.className = 'tab-btn' + ((name === 'summary' && i===0) || (name === 'entities' && i===1) || (name === 'crypto' && i===2) ? ' active' : '');
+      });
+    }
+  </script>
+</body>
+</html>
