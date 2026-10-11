@@ -1,6 +1,6 @@
 /* CASEDECODER — Design Specification Design Tokens */
 :root {
-  /* Color Palette */
+  /* Color Palette — Light theme (default) */
   --ink-900: #172421;
   --ink-700: #344640;
   --paper-50: #F8F7F2;
@@ -42,10 +42,34 @@
   --container-max: 1120px;
 }
 
+/* ── Dark theme overrides ─────────────────────────────────────── */
+[data-theme="dark"] {
+  --ink-900: #E8EDEB;
+  --ink-700: #A8B8B4;
+  --paper-50: #1A1F1E;
+  --surface-0: #232928;
+  --line-200: #2E3635;
+  --teal-700: #3ECFAB;
+  --teal-800: #5EDFC0;
+  --teal-100: #1A3530;
+  --teal-50: #141F1D;
+  --amber-700: #F0B952;
+  --amber-100: #2B2010;
+  --red-700: #F07070;
+  --red-100: #2D1A1A;
+  --slate-600: #7A9490;
+  --slate-100: #252B2A;
+  --border-subtle: 1px solid var(--line-200);
+}
+
+/* Box-sizing reset + smooth theme colour transitions */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
 }
 
 body {
@@ -775,8 +799,8 @@ a:hover {
   color: var(--teal-800);
 }
 .context-discussed {
-  background-color: #E6EFF8;
-  color: #1A5490;
+  background-color: var(--teal-50);
+  color: var(--teal-800);
 }
 .context-mentioned {
   background-color: var(--slate-100);
@@ -813,8 +837,8 @@ a:hover {
 }
 
 .panel-outcome {
-  background-color: #FAF8F2;
-  border: 1px solid #E6DEC9;
+  background-color: var(--amber-100);
+  border: 1px solid var(--line-200);
   border-left: 4px solid var(--amber-700);
 }
 
@@ -972,4 +996,37 @@ a:hover {
   text-align: center;
   font-size: 13px;
   color: var(--slate-600);
+}
+
+/* ── Theme Toggle Button ──────────────────────────────────────── */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--slate-100);
+  border: var(--border-subtle);
+  color: var(--ink-700);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 140ms ease, transform 220ms ease, color 140ms ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--teal-100);
+  color: var(--teal-700);
+  transform: rotate(20deg);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--teal-700);
+  outline-offset: 2px;
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  transition: opacity 180ms ease, transform 180ms ease;
 }
