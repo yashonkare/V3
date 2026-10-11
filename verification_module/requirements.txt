@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pymupdf
+pycryptodome
+transformers
+sentence-transformers
+requests
+numpy
+pytesseract
+pydantic
+python-multipart
+Pillow
