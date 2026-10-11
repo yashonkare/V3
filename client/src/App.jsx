@@ -10,11 +10,12 @@ import LawsList from './components/LawsList';
 import FindingsPanels from './components/FindingsPanels';
 import EvidenceList from './components/EvidenceList';
 import Disclaimer from './components/Disclaimer';
+import RecentUploads from './components/RecentUploads';
 import { SAMPLE_JUDGMENT_BRIEF, SAMPLE_CIVIL_BRIEF } from './utils/sampleData';
 import { saveActiveBrief, loadActiveBrief, clearActiveBrief } from './utils/storage';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'results'
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'results' | 'recent'
   const [selectedFile, setSelectedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState('');
@@ -47,6 +48,38 @@ export default function App() {
     setErrorState(null);
     setIsProcessing(false);
     setCurrentView('home');
+  };
+
+  // Reopen saved analysis for a document from recent uploads
+  const handleOpenRecentDocument = async (docId) => {
+    setIsProcessing(true);
+    setProcessingStep('Loading saved analysis and case brief…');
+    setCurrentView('home'); // brief loading overlay
+
+    try {
+      const res = await fetch(`/api/documents/${docId}`);
+      if (!res.ok) {
+        throw new Error('Could not load the saved document analysis.');
+      }
+      const doc = await res.json();
+      if (!doc.analysis) {
+        throw new Error('This document has no saved analysis or processing failed.');
+      }
+
+      setBriefData(doc.analysis);
+      saveActiveBrief(doc.analysis);
+      setCurrentView('results');
+    } catch (err) {
+      console.error('Error reopening document:', err);
+      setErrorState({
+        title: 'Document Retrieval Note',
+        message: err.message,
+        retryable: false
+      });
+      setCurrentView('recent');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   // Trigger analysis for live uploaded file
@@ -89,11 +122,10 @@ export default function App() {
       saveActiveBrief(data);
       setCurrentView('results');
     } catch (err) {
-      console.warn('Backend endpoint unavailable or returned error, falling back to mock sample:', err.message);
-      // If backend is not yet running, display a helpful notice and fallback for seamless frontend MVP demonstration
+      console.warn('Backend endpoint unavailable or returned error:', err.message);
       setErrorState({
-        title: 'Backend Service Note',
-        message: `${err.message} (Tip: During frontend verification, select one of the pre-tested public judgments below to test the full results brief flow.)`,
+        title: 'Analysis Notice',
+        message: `${err.message} (Tip: Select one of the pre-tested public judgments below for instant verification.)`,
         retryable: true
       });
     } finally {
@@ -122,10 +154,17 @@ export default function App() {
         currentView={currentView}
         filename={briefData?.documentMetadata?.filename || selectedFile?.name}
         onReset={handleReset}
+        onNavigateRecent={() => setCurrentView('recent')}
+        onNavigateHome={() => setCurrentView('home')}
       />
 
       <main className="container">
-        {currentView === 'home' ? (
+        {currentView === 'recent' ? (
+          <RecentUploads 
+            onOpenDocument={handleOpenRecentDocument}
+            onNavigateUpload={() => setCurrentView('home')}
+          />
+        ) : currentView === 'home' ? (
           <div>
             <div className="hero-grid">
               <div className="hero-content">
@@ -200,13 +239,22 @@ export default function App() {
                 </div>
               </div>
 
-              <button 
-                type="button" 
-                className="btn btn-secondary"
-                onClick={handleReset}
-              >
-                ← Analyze another document
-              </button>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary"
+                  onClick={() => setCurrentView('recent')}
+                >
+                  View Recent Uploads
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-primary"
+                  onClick={handleReset}
+                >
+                  ← Analyze another document
+                </button>
+              </div>
             </div>
 
             <div className="brief-layout">
