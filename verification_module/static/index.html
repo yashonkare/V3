@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Court Authenticity & Reference Verification Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(18, 24, 38, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: radial-gradient(circle at top right, #1e1b4b 0%, #0b0f19 50%, #030712 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1.5rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 980px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(79, 70, 229, 0.15);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #ffffff, #93c5fd, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.6rem;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .upload-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 1.25rem;
+      padding: 2.5rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      margin-bottom: 2rem;
+    }
+    .dropzone {
+      border: 2px dashed rgba(99, 102, 241, 0.4);
+      border-radius: 1rem;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: rgba(15, 23, 42, 0.5);
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: #818cf8;
+      background: rgba(79, 70, 229, 0.08);
+      transform: translateY(-2px);
+    }
+    .dropzone svg {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 1rem;
+      color: #818cf8;
+    }
+    .dropzone span.highlight {
+      color: #818cf8;
+      font-weight: 600;
+    }
+    .dropzone p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+    input[type="file"] { display: none; }
+    .file-status {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+      padding: 0.9rem 1.25rem;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 0.75rem;
+    }
+    .btn {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 0.9rem 1.75rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.39);
+    }
+    .btn:hover:not(:disabled) {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    /* Results View */
+    .results-view {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 1.25rem;
+      padding: 2.25rem;
+      margin-bottom: 2rem;
+    }
+    .verdict-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .verdict-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    .verdict-tag {
+      padding: 0.4rem 1.2rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      letter-spacing: 0.03em;
+    }
+    .verdict-Allowed { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+    .verdict-Flagged { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+    .verdict-Rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+    
+    .grid-scores {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .score-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    .score-val {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #818cf8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .score-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 1.5rem 0 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .detail-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .tag {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.35rem;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #c7d2fe;
+    }
+    .spinner {
+      display: none;
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Court Review Intelligence V3</div>
+      <h1>Authenticity & Reference Verification</h1>
+      <p class="subtitle">End-to-end 6-stage verification pipeline for Indian court pleadings: Cryptographic tamper checks, OCR, InLegalBERT citation extraction, SBERT semantic integrity, and eCourts grounding.</p>
+    </header>
+
+    <div class="upload-card">
+      <div class="dropzone" id="dropzone">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+        <div style="font-size: 1.1rem; font-weight: 600;">
+          <span class="highlight">Click to upload</span> or drag and drop court document
+        </div>
+        <p>Supports petitions, plaints, affidavits, and judgments in PDF format</p>
+        <input type="file" id="fileInput" accept=".pdf" />
+      </div>
+
+      <div class="file-status" id="fileStatus">
+        <span id="fileName" style="font-weight: 600; color: #e2e8f0;"></span>
+        <span id="fileSize" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+      </div>
+
+      <button class="btn" id="verifyBtn" disabled>
+        <span id="btnText">Execute 6-Step Verification</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+    </div>
+
+    <div class="results-view" id="resultsView">
+      <div class="verdict-header">
+        <div>
+          <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Final Verdict</div>
+          <div class="verdict-title" id="verdictText">Allowed</div>
+        </div>
+        <div class="verdict-tag" id="verdictBadge">ALLOWED</div>
+      </div>
+
+      <div class="grid-scores">
+        <div class="score-card">
+          <div class="score-val" id="confidenceVal">--</div>
+          <div class="score-lbl">Confidence</div>
+        </div>
+        <div class="score-card">
+          <div class="score-val" id="integrityVal">--</div>
+          <div class="score-lbl">Integrity</div>
+        </div>
+        <div class="score-card">
+          <div class="score-val" id="semanticVal">--</div>
+          <div class="score-lbl">Semantic Fidelity</div>
+        </div>
+        <div class="score-card">
+          <div class="score-val" id="groundingVal">--</div>
+          <div class="score-lbl">eCourts Grounding</div>
+        </div>
+      </div>
+
+      <div class="section-title">Summary & Findings</div>
+      <div class="detail-box" id="summaryBox"></div>
+
+      <div class="section-title">1. Cryptographic & Metadata Check</div>
+      <div class="detail-box" id="cryptoBox"></div>
+
+      <div class="section-title">2. Extracted Entities (InLegalBERT NER)</div>
+      <div class="detail-box" id="nerBox"></div>
+
+      <div class="section-title">3. Semantic Precedent Verification (InLegal-Sbert)</div>
+      <div class="detail-box" id="semanticBox"></div>
+
+      <div class="section-title">4. External eCourts Grounding</div>
+      <div class="detail-box" id="groundingBox"></div>
+    </div>
+  </div>
+
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileStatus = document.getElementById('fileStatus');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+    const resultsView = document.getElementById('resultsView');
+
+    let selectedFile = null;
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        alert('Please upload a valid PDF document.');
+        return;
+      }
+      selectedFile = file;
+      fileName.textContent = file.name;
+      fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+      fileStatus.style.display = 'flex';
+      verifyBtn.disabled = false;
+    }
+
+    verifyBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+
+      verifyBtn.disabled = true;
+      btnText.style.display = 'none';
+      spinner.style.display = 'block';
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      try {
+        const resp = await fetch('/api/v1/verify-document', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!resp.ok) {
+          const err = await resp.json();
+          throw new Error(err.detail || 'Verification request failed');
+        }
+
+        const data = await resp.json();
+        renderResults(data);
+      } catch (err) {
+        alert('Verification Error: ' + err.message);
+      } finally {
+        verifyBtn.disabled = false;
+        btnText.style.display = 'inline';
+        spinner.style.display = 'none';
+      }
+    });
+
+    function renderResults(data) {
+      resultsView.style.display = 'block';
+      resultsView.scrollIntoView({ behavior: 'smooth' });
+
+      // Verdict
+      document.getElementById('verdictText').textContent = data.verdict;
+      const badge = document.getElementById('verdictBadge');
+      badge.textContent = data.verdict.toUpperCase();
+      badge.className = 'verdict-tag verdict-' + (data.verdict.includes('Allowed') ? 'Allowed' : (data.verdict.includes('Flagged') ? 'Flagged' : 'Rejected'));
+
+      // Scores
+      document.getElementById('confidenceVal').textContent = (data.confidence_score * 100).toFixed(0) + '%';
+      document.getElementById('integrityVal').textContent = (data.step_scores.integrity_score * 100).toFixed(0) + '%';
+      document.getElementById('semanticVal').textContent = (data.step_scores.semantic_fidelity_score * 100).toFixed(0) + '%';
+      document.getElementById('groundingVal').textContent = (data.step_scores.external_grounding_score * 100).toFixed(0) + '%';
+
+      // Summary
+      document.getElementById('summaryBox').innerHTML = `
+        <p><strong>Overview:</strong> ${data.summary}</p>
+        <ul style="margin-top: 0.5rem; padding-left: 1.25rem;">
+          ${data.reasons.map(r => `<li>${r}</li>`).join('')}
+        </ul>
+      `;
+
+      // Crypto Check
+      const c1 = data.check_1_cryptographic;
+      document.getElementById('cryptoBox').innerHTML = `
+        <p><strong>Tamper Risk:</strong> ${(c1.tamper_risk_score * 100).toFixed(1)}% | <strong>Pages:</strong> ${c1.page_count}</p>
+        <p><strong>Digital Signature / e-Sign:</strong> ${c1.has_digital_signature ? '✅ Detected' : '❌ Unsigned / Scanned'}</p>
+        <p><strong>Post-Signing Modifications:</strong> ${c1.is_modified_after_signing ? '⚠️ YES (Bytes appended)' : 'None detected'}</p>
+        ${c1.anomalies.length ? `<p style="color: #f87171; margin-top: 0.5rem;"><strong>Anomalies:</strong> ${c1.anomalies.join('; ')}</p>` : ''}
+      `;
+
+      // NER Check
+      const c3 = data.check_3_ner_entities;
+      document.getElementById('nerBox').innerHTML = `
+        <div><strong>16-Char CNR Numbers:</strong></div>
+        <div class="tags">${c3.cnr_numbers.length ? c3.cnr_numbers.map(c => `<span class="tag">${c}</span>`).join('') : '<span style="color:#9ca3af">None found</span>'}</div>
+        <div style="margin-top: 0.75rem;"><strong>Legal Citations (AIR / SCC):</strong></div>
+        <div class="tags">${c3.citations.length ? c3.citations.map(c => `<span class="tag">${c}</span>`).join('') : '<span style="color:#9ca3af">None detected</span>'}</div>
+        <div style="margin-top: 0.75rem;"><strong>Judges Identified:</strong> ${c3.judge_names.join(', ') || 'None'}</div>
+        <div style="margin-top: 0.25rem;"><strong>Advocates Identified:</strong> ${c3.advocate_names.join(', ') || 'None'}</div>
+      `;
+
+      // Semantic Check
+      const c4 = data.check_4_semantic_verification;
+      document.getElementById('semanticBox').innerHTML = `
+        <p><strong>Average Semantic Alignment:</strong> ${(c4.average_similarity * 100).toFixed(1)}%</p>
+        <p><strong>Misquote / Distortion Alert:</strong> ${c4.misquote_detected ? '🚨 High discrepancy detected' : '✅ Clear'}</p>
+        ${c4.results.map(r => `
+          <div style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 0.4rem;">
+            <div><em>"${r.quote}"</em></div>
+            <div style="font-size: 0.8rem; color: #818cf8; margin-top: 0.25rem;">Matched Precedent: ${r.canonical_citation || 'N/A'} (Similarity: ${(r.similarity_score * 100).toFixed(1)}% - <strong>${r.status}</strong>)</div>
+          </div>
+        `).join('')}
+      `;
+
+      // Grounding Check
+      const c5 = data.check_5_external_grounding;
+      document.getElementById('groundingBox').innerHTML = `
+        <p><strong>API Grounding Status:</strong> ${c5.api_status} | <strong>Score:</strong> ${(c5.overall_grounding_score * 100).toFixed(0)}%</p>
+        ${c5.grounded_cases.map(g => `
+          <div style="margin-top: 0.5rem; padding: 0.6rem; background: rgba(0,0,0,0.2); border-radius: 0.4rem;">
+            <div><strong>CNR:</strong> ${g.cnr_number} | <strong>Status:</strong> ${g.case_status || 'N/A'}</div>
+            <div><strong>Court:</strong> ${g.court_name || 'N/A'} | <strong>Presiding Judge:</strong> ${g.presiding_judge || 'N/A'}</div>
+            ${g.mismatches.length ? `<div style="color: #f87171; margin-top: 0.25rem;">Discrepancies: ${g.mismatches.join('; ')}</div>` : ''}
+          </div>
+        `).join('')}
+      `;
+    }
+  </script>
+</body>
+</html>
